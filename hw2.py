@@ -3,7 +3,7 @@ import json
 import xml
 
 def txt_convert(filename, convert_to):
-    
+    filename = 'NFL.txt'
     with open(filename) as file_object:
         contents = file_object.read()
 
