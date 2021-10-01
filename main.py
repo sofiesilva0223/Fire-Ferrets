@@ -14,6 +14,6 @@ readTxt('NFL.txt')
 
 #Prompt user to choose c,j,x code:
 
-#Function for coverting file to c, j and x:
+#Function for coverting file to c, j and x based on letter chosen from user input:
 
 
