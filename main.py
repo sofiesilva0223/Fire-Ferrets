@@ -29,18 +29,20 @@ def userchoice():
                 write.writerows(lineSpace)
 
     elif choice == 'j':
-        with open('NFL.txt', 'r') as infile: #need to take out spaces from txt file
+        with open('NFL.txt', 'r') as infile:
             lineSep = (line.strip() for line in infile)
             lineSpace = (line.split(",") for line in lineSep if line)
-            with open('NFL.csv', 'w') as outfile: #create csv
+            with open('NFL.csv', 'w') as outfile:
                 write = csv.writer(outfile)
                 write.writerows(lineSpace)
-                
-        csvf = open('NFL.csv', 'r',encoding='utf-8')
-        jsonf = open('NFL.json', 'w',encoding='utf-8', newline='\n')
-        read = csv.DictReader(csvf)  #convert csv to json
+
+        csvf = open('NFL.csv', 'r')
+        jsonf = open('NFL.json', 'w',encoding='utf-8')
+        read = csv.DictReader(csvf)
         for row in read:
-            jsonf.write(json.dumps(row,skipkeys=True, allow_nan=True, indent=6))
+            jsonf.write(json.dumps(row,skipkeys=True, allow_nan=True, indent=2, separators=(',', ' \n :'))+'\n')
+
+
 
     elif choice == 'x':
         with open('NFL.txt', 'r') as infile:
