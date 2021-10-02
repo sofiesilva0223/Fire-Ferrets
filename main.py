@@ -1,6 +1,8 @@
 import csv
 import json
 import xml
+from xml.etree.ElementTree import Element, SubElement, tostring, parse, ElementTree
+import xml.etree.ElementTree as ET
 #HW2
 #Fire Ferrets: Cassidy Chu, Sofia Silva, Edin Schneider, Matt Borja
 #CMPE 131, section 01
