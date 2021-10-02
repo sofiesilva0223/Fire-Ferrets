@@ -39,7 +39,21 @@ def userchoice():
         for row in read:
             json.dump(row, jsonf)
             jsonf.write('\n')
-    #elif choice == 'x':
+    elif choice == 'x':
+        with open('NFL.txt', 'r') as infile:
+            keys = infile.readline().split("\t")
+            lines = infile.readlines()
+            root = Element('Data')
+            #loops through each line to collect the data and place them accordingly
+            for line in lines:
+                lineElement = SubElement(root, "Line")
+                line = line.split("\t")
+                for i, key in enumerate(keys):
+                    child = SubElement(lineElement, keys[i])
+                    child.text = line[i]
+            tree = ElementTree(root)
+            with open ("NFL.xml", "wb") as outfile :
+                tree.write(outfile)
     else:
         print("Goodbye")
 userchoice() #call function
