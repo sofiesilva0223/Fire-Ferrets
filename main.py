@@ -36,11 +36,11 @@ def userchoice():
                 write = csv.writer(outfile)
                 write.writerows(lineSpace)
 
-        csvf = open('NFL.csv', 'r')
+        csvf = open('NFL.csv', 'r', encoding='utf-8')
         jsonf = open('NFL.json', 'w',encoding='utf-8')
-        read = csv.DictReader(csvf)
+        read = csv.DictReader(csvf, delimiter='\t')
         for row in read:
-            jsonf.write(json.dumps(row,skipkeys=True, allow_nan=True, indent=2, separators=(',', ' \n :'))+'\n')
+            jsonf.write(json.dumps(row,skipkeys=True, allow_nan=True, indent=2, separators=(',',':'))+'\n')
 
 
 
