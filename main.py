@@ -20,7 +20,7 @@ def userchoice():
     choice = input('Enter your choice for file you want:\n c for csv file\n j for json file\n x for xml file\n')
     print(choice)
     #choice outcomes
-    if choice == 'c':
+    if choice == 'c' or choice == 'C':
         with open('NFL.txt', 'r') as infile:
             lineSep = (line.strip() for line in infile)
             lineSpace = (line.split(",") for line in lineSep if line)
@@ -28,7 +28,7 @@ def userchoice():
                 write = csv.writer(outfile)
                 write.writerows(lineSpace)
 
-    elif choice == 'j':
+    elif choice == 'j' or choice == 'J':
         with open('NFL.txt', 'r') as infile:
             lineSep = (line.strip() for line in infile)
             lineSpace = (line.split(",") for line in lineSep if line)
@@ -44,7 +44,7 @@ def userchoice():
 
 
 
-    elif choice == 'x':
+    elif choice == 'x' or choice == 'X':
         with open('NFL.txt', 'r') as infile:
             keys = infile.readline().split("\t")
             lines = infile.readlines()
