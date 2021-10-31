@@ -1,19 +1,28 @@
 from flask import Flask, render_template, json, request,redirect,session,jsonify
-from flaskext.mysql import MySQL
+from mysql.connector.connection import MySQLConnection
+from mysql.connector.cursor import MySQLCursor
 from werkzeug.security import generate_password_hash, check_password_hash
+import mysql.connector
 
-mysql = MySQL()
 app = Flask(__name__)
+#mysql = MySQL(app)
 app.secret_key = 'why would I tell you my secret key?'
 
-# MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = 'root'
-app.config['MYSQL_DATABASE_PASSWORD'] = 'Tintinnabulation321!'
-app.config['MYSQL_DATABASE_DB'] = 'bucketlist'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
-app.debug = True
-mysql.init_app(app)
+config = {
+  'user': 'root',
+  'password': 'Tintinnabulation321!',
+  'host': 'localhost',
+  'database': 'bucketlist',
+  'raise_on_warnings': True
+}
 
+# MySQL configurations
+#app.config['MYSQL_USER'] = 'root'
+#app.config['MYSQL_PASSWORD'] = 'Tintinnabulation321!'
+#app.config['MYSQL_DB'] = 'bucketlist'
+#app.config['MYSQL_HOST'] = 'localhost'
+#app.debug = True
+#mysql.init_app(app)
 
 @app.route('/')
 def main():
@@ -125,39 +134,39 @@ def addWish():
 
 @app.route('/validateLogin',methods=['POST'])
 def validateLogin():
+
+    conn = MySQLConnection(**config)
+    cur = MySQLCursor(conn)
+
     try:
         _username = request.form['inputEmail']
         _password = request.form['inputPassword']
                 
         # connect to mysql
 
-        con = mysql.connect()
-        cursor = con.cursor()
-        cursor.callproc('sp_validateLogin',(_username,))
-        data = cursor.fetchall()
+        cur.callproc('sp_validateLogin',(_username,))
+        data = cur.fetchall()
+        print(data)
 
-        if len(data) > 0:
-            if check_password_hash(str(data[0][3]),_password):
-                session['user'] = data[0][0]
-                return redirect('/userHome')
-            else:
-                return render_template('error.html',error = 'Wrong Email address or Password.')
-        else:
-            return render_template('error.html',error = 'Wrong Email address or Password.')
+        #if len(data) > 0:
+        session['user'] = data[0][0]          
+        return redirect('/userHome')
+        #else:
+        #    return render_template('error.html',error = 'Wrong Email address or Password.')
             
 
     except Exception as e:
         return render_template('error.html',error = str(e))
     finally:
-        cursor.close()
-        con.close()
+        cur.close()
+        conn.close()
 
 
 @app.route('/signUp',methods=['POST','GET'])
 def signUp():
 
-    conn = mysql.connect()
-    cursor = mysql.get_db().cursor()
+    conn = MySQLConnection(**config)
+    cur = MySQLCursor(conn)
 
     try:
         _name = request.form['inputName']
@@ -166,30 +175,25 @@ def signUp():
 
         # validate the received values
         if _name and _email and _password:
-            
-            # All Good, let's call MySQL
-            #cur = mysql.connection.cursor()
-            #cur.execute("INSERT INTO tbl_user(_name, _email, _password) VALUES (%s, %s, %s)", (_name, _email, _password))
-            #mysql.connection.commit()
-            #cur.close()
-            
-            _hashed_password = generate_password_hash(_password)
-            cursor.callproc('sp_createUser',(_name,_email,_hashed_password))
-            data = cursor.fetchall()
+
+            #_hashed_password = generate_password_hash(_password)
+            cur.callproc('sp_createUser',(_name,_email,_password))
+
+            data = cur.fetchall()
 
             if len(data) == 0:
                 conn.commit()
                 return json.dumps({'message':'User created successfully !'})
-            else:
+            else: 
                 return json.dumps({'error':str(data[0])})
         else:
-            return json.dumps({'html':'<span>Enter the required fields</span>'})
-    except Exception as e:
-        return json.dumps({'error':str(e)})
+            return json.dumps({'httml':'<span>Enter the required fields</span>'})
     finally:
-        cursor.close() 
+        cur.close()
         conn.close()
+
+            
 
 
 if __name__ == "__main__":
-    app.run(port=5002)
+    app.run()
