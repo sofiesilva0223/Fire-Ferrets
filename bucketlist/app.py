@@ -5,7 +5,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
 
 app = Flask(__name__)
-#mysql = MySQL(app)
 app.secret_key = 'why would I tell you my secret key?'
 
 config = {
@@ -16,13 +15,7 @@ config = {
   'raise_on_warnings': True
 }
 
-# MySQL configurations
-#app.config['MYSQL_USER'] = 'root'
-#app.config['MYSQL_PASSWORD'] = 'Tintinnabulation321!'
-#app.config['MYSQL_DB'] = 'bucketlist'
-#app.config['MYSQL_HOST'] = 'localhost'
-#app.debug = True
-#mysql.init_app(app)
+app.debug = True
 
 @app.route('/')
 def main():
@@ -135,26 +128,27 @@ def addWish():
 @app.route('/validateLogin',methods=['POST'])
 def validateLogin():
 
-    conn = MySQLConnection(**config)
-    cur = MySQLCursor(conn)
-
     try:
         _username = request.form['inputEmail']
         _password = request.form['inputPassword']
-                
-        # connect to mysql
 
-        cur.callproc('sp_validateLogin',(_username,))
+        # connect to mysql
+        conn = MySQLConnection(**config)
+        cur = conn.cursor(named_tuple=True, buffered=True, dictionary=True, cursor_class=MySQLCursor)
+
+        #cur.callproc('sp_validateLogin', (_username,))
+        select_stmt = "SELECT * FROM tbl_user WHERE user_username = %(_username)s"
+        cur.execute(select_stmt, {'_username': _username})
         data = cur.fetchall()
         print(data)
+        print(data[0][0])
 
-        #if len(data) > 0:
-        session['user'] = data[0][0]          
-        return redirect('/userHome')
-        #else:
-        #    return render_template('error.html',error = 'Wrong Email address or Password.')
-            
-
+        if len(data) > 0:
+            session['user'] = data[0][0]          
+            return redirect('/userHome')
+        else:
+            return render_template('error.html',error = 'Wrong Email address or Password.')
+        
     except Exception as e:
         return render_template('error.html',error = str(e))
     finally:
@@ -165,9 +159,6 @@ def validateLogin():
 @app.route('/signUp',methods=['POST','GET'])
 def signUp():
 
-    conn = MySQLConnection(**config)
-    cur = MySQLCursor(conn)
-
     try:
         _name = request.form['inputName']
         _email = request.form['inputEmail']
@@ -175,7 +166,8 @@ def signUp():
 
         # validate the received values
         if _name and _email and _password:
-
+            conn = MySQLConnection(**config)
+            cur = MySQLCursor(conn)
             #_hashed_password = generate_password_hash(_password)
             cur.callproc('sp_createUser',(_name,_email,_password))
 
