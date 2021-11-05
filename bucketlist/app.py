@@ -17,6 +17,9 @@ config = {
 
 app.debug = True
 
+#Default Setting
+pageLimit = 2
+
 @app.route('/')
 def main():
     return render_template('index.html')
@@ -49,6 +52,31 @@ def logout():
     session.pop('user',None)
     return redirect('/')
 
+@app.route('/deleteWish',methods=['POST'])
+def deleteWish():
+    try:
+        if session.get('user'):
+            _id = request.form['id']
+            _user = session.get('user')
+
+            conn = MySQLConnection(**config)
+            cur = conn.cursor(cursor_class=MySQLCursor)
+            cur.callproc('sp_deleteWish',(_id,_user))
+            result = cur.fetchall()
+
+            if len(result) == 0:
+                conn.commit()
+                return json.dumps({'status':'OK'})
+            else:
+                return json.dumps({'status':'An Error occured'})
+        else:
+            return render_template('error.html',error = 'Unauthorized Access')
+    except Exception as e:
+        return json.dumps({'status':str(e)})
+    finally:
+        cur.close()
+        conn.close()
+
 @app.route('/getWishById',methods=['POST'])
 def getWishById():
     try:
@@ -57,10 +85,12 @@ def getWishById():
             _id = request.form['id']
             _user = session.get('user')
     
-            conn = mysql.connect()
-            cursor = conn.cursor()
-            cursor.callproc('sp_GetWishById',(_id,_user))
-            result = cursor.fetchall()
+            conn = MySQLConnection(**config)
+            cur = conn.cursor(cursor_class=MySQLCursor)
+            #cur.callproc('sp_GetWishById',(_id,_user))
+            select_stmt = "select * from tbl_wish where wish_id = %(_id)s and wish_user_id = %(_user)s"
+            cur.execute(select_stmt, {'_id':_id, '_user':_user})
+            result = cur.fetchall()
 
             wish = []
             wish.append({'Id':result[0][0],'Title':result[0][1],'Description':result[0][2]})
@@ -71,17 +101,37 @@ def getWishById():
     except Exception as e:
         return render_template('error.html',error = str(e))
         
-@app.route('/getWish')
+@app.route('/getWish',methods=['POST'])
 def getWish():
     try:
         if session.get('user'):
             _user = session.get('user')
+            _limit = pageLimit
+            _offset = request.form['offset']
+            print(_offset)
+            _total_records = 0
 
-            con = mysql.connect()
-            cursor = con.cursor()
-            cursor.callproc('sp_GetWishByUser',(_user,))
-            wishes = cursor.fetchall()
+            con = MySQLConnection(**config)
+            cur = con.cursor(dictionary=True, cursor_class=MySQLCursor)
 
+            select_stmt = """   
+            select count(*) into %(_total_records)s from tbl_wish where wish_user_id = %(_user)s; 
+            SET @t1 = CONCAT( 'select * from tbl_wish where wish_user_id = '%(_user)s' order by wish_date desc limit '%(_limit)s' offset '%(_offset)s);
+	        PREPARE stmt FROM @t1;
+	        EXECUTE stmt;
+	        DEALLOCATE PREPARE stmt1;"""
+            cur.execute(select_stmt, {'_user': _user, '_limit':_limit, '_offset':_offset, '_total_records':_total_records})
+            
+            wishes = cur.fetchall()
+            cur.close()
+
+            cur = con.cursor(dictionary=True, cursor_class=MySQLCursor)
+
+            cur.execute('SELECT @_sp_GetWishByUser_3')
+
+            outParam = cur.fetchall()
+
+            response = []
             wishes_dict = []
             for wish in wishes:
                 wish_dict = {
@@ -90,8 +140,10 @@ def getWish():
                         'Description': wish[2],
                         'Date': wish[4]}
                 wishes_dict.append(wish_dict)
+            response.append(wishes_dict)
+            response.append({'total':outParam[0][0]}) 
 
-            return json.dumps(wishes_dict)
+            return json.dumps(response)
         else:
             return render_template('error.html', error = 'Unauthorized Access')
     except Exception as e:
@@ -100,16 +152,16 @@ def getWish():
 @app.route('/addWish',methods=['POST'])
 def addWish():
     try:
-        conn = mysql.connect()
-        cursor = conn.cursor()
+        conn = MySQLConnection(**config)
+        cur = conn.cursor(cursor_class=MySQLCursor)
 
         if session.get('user'):
             _title = request.form['inputTitle']
             _description = request.form['inputDescription']
             _user = session.get('user')
 
-            cursor.callproc('sp_addWish',(_title,_description,_user))
-            data = cursor.fetchall()
+            cur.callproc('sp_addWish',(_title,_description,_user))
+            data = cur.fetchall()
 
             if len(data) == 0:
                 conn.commit()
@@ -122,7 +174,34 @@ def addWish():
     except Exception as e:
         return render_template('error.html',error = str(e))
     finally:
-        cursor.close()
+        cur.close()
+        conn.close()
+
+@app.route('/updateWish', methods=['POST'])
+def updateWish():
+    try:
+        if session.get('user'):
+            _user = session.get('user')
+            _title = request.form['title']
+            _description = request.form['description']
+            _wish_id = request.form['id']
+
+            
+
+            conn = MySQLConnection(**config)
+            cur = conn.cursor(cursor_class=MySQLCursor)
+            cur.callproc('sp_updateWish',(_title,_description,_wish_id,_user))
+            data = cur.fetchall()
+
+            if len(data) == 0:
+                conn.commit()
+                return json.dumps({'status':'OK'})
+            else:
+                return json.dumps({'status':'ERROR'})
+    except Exception as e:
+        return json.dumps({'status':'Unauthorized access'})
+    finally:
+        cur.close()
         conn.close()
 
 @app.route('/validateLogin',methods=['POST'])
@@ -140,8 +219,6 @@ def validateLogin():
         select_stmt = "SELECT * FROM tbl_user WHERE user_username = %(_username)s"
         cur.execute(select_stmt, {'_username': _username})
         data = cur.fetchall()
-        print(data)
-        print(data[0][0])
 
         if len(data) > 0:
             session['user'] = data[0][0]          
