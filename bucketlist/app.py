@@ -101,37 +101,41 @@ def getWishById():
     except Exception as e:
         return render_template('error.html',error = str(e))
         
-@app.route('/getWish',methods=['POST'])
+@app.route('/getWish')
 def getWish():
     try:
         if session.get('user'):
             _user = session.get('user')
-            _limit = pageLimit
-            _offset = request.form['offset']
-            print(_offset)
-            _total_records = 0
+            #_limit = pageLimit
+            #_offset = request.form['offset']
+            #print(_offset)
+            #_total_records = 0
 
             con = MySQLConnection(**config)
             cur = con.cursor(dictionary=True, cursor_class=MySQLCursor)
+            #cur.callproc('sp_GetWishByUser',(_user,))
 
-            select_stmt = """   
-            select count(*) into %(_total_records)s from tbl_wish where wish_user_id = %(_user)s; 
-            SET @t1 = CONCAT( 'select * from tbl_wish where wish_user_id = '%(_user)s' order by wish_date desc limit '%(_limit)s' offset '%(_offset)s);
-	        PREPARE stmt FROM @t1;
-	        EXECUTE stmt;
-	        DEALLOCATE PREPARE stmt1;"""
-            cur.execute(select_stmt, {'_user': _user, '_limit':_limit, '_offset':_offset, '_total_records':_total_records})
+            
+            select_stmt = "select * from tbl_wish where wish_user_id = %(_user)s"   
+            #select count(*) into %(_total_records)s from tbl_wish where wish_user_id = %(_user)s; 
+            #SET @t1 = CONCAT( 'select * from tbl_wish where wish_user_id = ',%(_user)s,' order by wish_date desc limit ',%(_limit)s,' offset ',%(_offset)s);
+	        #PREPARE stmt FROM @t1;
+	        #EXECUTE stmt;
+	        #DEALLOCATE PREPARE stmt1;
+            #"""
+
+            cur.execute(select_stmt, {'_user': _user})
             
             wishes = cur.fetchall()
-            cur.close()
+            #cur.close()
 
-            cur = con.cursor(dictionary=True, cursor_class=MySQLCursor)
+            #ur = con.cursor(dictionary=True, cursor_class=MySQLCursor)
 
-            cur.execute('SELECT @_sp_GetWishByUser_3')
+            #cur.execute('SELECT @_sp_GetWishByUser_3')
 
-            outParam = cur.fetchall()
+            #outParam = cur.fetchall()
 
-            response = []
+            #response = []
             wishes_dict = []
             for wish in wishes:
                 wish_dict = {
@@ -140,10 +144,10 @@ def getWish():
                         'Description': wish[2],
                         'Date': wish[4]}
                 wishes_dict.append(wish_dict)
-            response.append(wishes_dict)
-            response.append({'total':outParam[0][0]}) 
+            #response.append(wishes_dict)
+            #response.append({'total':outParam[0][0]}) 
 
-            return json.dumps(response)
+            return json.dumps(wishes_dict)
         else:
             return render_template('error.html', error = 'Unauthorized Access')
     except Exception as e:
@@ -221,8 +225,11 @@ def validateLogin():
         data = cur.fetchall()
 
         if len(data) > 0:
-            session['user'] = data[0][0]          
-            return redirect('/userHome')
+            if check_password_hash(str(data[0][3]), _password):
+                session['user'] = data[0][0]          
+                return redirect('/userHome')
+            else:
+                return render_template('error.html', error = 'Wrong Email address or Password.')
         else:
             return render_template('error.html',error = 'Wrong Email address or Password.')
         
@@ -245,8 +252,8 @@ def signUp():
         if _name and _email and _password:
             conn = MySQLConnection(**config)
             cur = MySQLCursor(conn)
-            #_hashed_password = generate_password_hash(_password)
-            cur.callproc('sp_createUser',(_name,_email,_password))
+            _hashed_password = generate_password_hash(_password)
+            cur.callproc('sp_createUser',(_name,_email,_hashed_password))
 
             data = cur.fetchall()
 
