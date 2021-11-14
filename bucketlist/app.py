@@ -3,6 +3,8 @@ from mysql.connector.connection import MySQLConnection
 from mysql.connector.cursor import MySQLCursor
 from werkzeug.security import generate_password_hash, check_password_hash
 import mysql.connector
+import uuid
+import os
 
 app = Flask(__name__)
 app.secret_key = 'why would I tell you my secret key?'
@@ -20,9 +22,20 @@ app.debug = True
 #Default Setting
 pageLimit = 2
 
+app.config['UPLOAD_FOLDER'] = 'C:/Users/Edin/Desktop/Fall 2021/CMPE131/FireFerrets/Fire-Ferrets/bucketlist/static/Uploads'
+
 @app.route('/')
 def main():
     return render_template('index.html')
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    if request.method == 'POST':
+        file = request.files['file']
+        extension = os.path.splitext(file.filename)[1]
+        f_name = str(uuid.uuid4()) + extension
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], f_name))
+        return json.dumps({'filename':f_name})
 
 @app.route('/showSignUp')
 def showSignUp():
@@ -88,12 +101,12 @@ def getWishById():
             conn = MySQLConnection(**config)
             cur = conn.cursor(cursor_class=MySQLCursor)
             #cur.callproc('sp_GetWishById',(_id,_user))
-            select_stmt = "select * from tbl_wish where wish_id = %(_id)s and wish_user_id = %(_user)s"
+            select_stmt = "select wish_id,wish_title,wish_description,wish_file_path,wish_private,wish_accomplished from tbl_wish where wish_id = %(_id)s and wish_user_id = %(_user)s"
             cur.execute(select_stmt, {'_id':_id, '_user':_user})
             result = cur.fetchall()
 
             wish = []
-            wish.append({'Id':result[0][0],'Title':result[0][1],'Description':result[0][2]})
+            wish.append({'Id':result[0][0],'Title':result[0][1],'Description':result[0][2],'Private':result[0][4],'Done':result[0][5]})
 
             return json.dumps(wish)
         else:
@@ -164,7 +177,20 @@ def addWish():
             _description = request.form['inputDescription']
             _user = session.get('user')
 
-            cur.callproc('sp_addWish',(_title,_description,_user))
+            if request.form.get('filePath') is None:
+                _filePath = ''
+            else:
+                _filePath = request.form.get('filePath')
+            if request.form.get('private') is None:
+                _private = 0
+            else:
+                _private = 1
+            if request.form.get('done') is None:
+                _done = 0
+            else:
+                _done = 1
+
+            cur.callproc('sp_addWish',(_title,_description,_user, _filePath, _private, _done))
             data = cur.fetchall()
 
             if len(data) == 0:
