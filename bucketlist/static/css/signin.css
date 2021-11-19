@@ -54,6 +54,9 @@ header ul li a.active {
   background: #fff;
   color: #2b1055;
 }
+footer{
+  color: #fff;
+}
 .jumbotron{
   width: 300px;
   padding: 30px;
