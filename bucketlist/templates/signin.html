@@ -1,35 +1,33 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <title>Python Flask Bucket List App</title>
 
    
-    <link href="http://getbootstrap.com/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-    <link href="http://getbootstrap.com/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
-    <link href="../static/css/signup.css" rel="stylesheet">
+    <link href="https://getbootstrap.com/docs/3.4/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
     <script src="../static/js/jquery-1.11.2.js"></script>
     <script src="../static/js/signIn.js"></script>
    
   </head>
 
+  <header>
+    <a href="#" class="logo">Python Flask App</a>
+    <ul>
+      <li><a href="#" class="active">Home</a></li>
+      <li><a href="/showSignin" class="active">Sign In</a></li>
+      <li><a href="/showSignUp" class="active">Sign Up</a></li>
+      <li><a href="/addWish" class="active">Add Wish</a></li>
+  </header>
+
   <body>
 
     <div class="container">
-      <div class="header">
-        <nav>
-          <ul class="nav nav-pills pull-right">
-            <li role="presentation" ><a href="/">Home</a></li>
-            <li role="presentation" class="active"><a href="#">Sign In</a></li>
-            <li role="presentation" ><a href="/showSignUp">Sign Up</a></li>
-          </ul>
-        </nav>
-        <h3 class="text-muted">Python Flask App</h3>
-      </div>
 
       <div class="jumbotron">
-        <h1>Bucket List App</h1>
+        <h1>Welcome!</h1>
         <form class="form-signin" action="/validateLogin" method="post">
         <label for="inputEmail" class="sr-only">Email address</label>
         <input type="email" name="inputEmail" id="inputEmail" class="form-control" placeholder="Email address" required autofocus>
@@ -43,10 +41,9 @@
       
 
       <footer class="footer">
-        <p>&copy; Company 2015</p>
+        <p>&copy; Fire Ferrets 2021</p>
       </footer>
 
     </div>
   </body>
 </html>
-
