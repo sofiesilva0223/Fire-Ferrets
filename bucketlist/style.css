@@ -65,6 +65,9 @@ section{
     justify-content: center;
     align-items: center;
 }
+footer{
+    color: #fff;
+}
 
 /*section ::before{
     content: '';
@@ -136,6 +139,8 @@ section{
     font-size: 2 em;
     color: #fff;
 }
+/* for signin.html */
+
 
 /* for signup.html */
 .jumbotron{
@@ -197,3 +202,5 @@ section{
 .form-signin input[type="submit"]:hover{
     background: #937abb;
 }
+
+/* for the addWish.html/userHome.html*/
