@@ -66,6 +66,9 @@ section{
   justify-content: center;
   align-items: center;
 }
+footer{
+  color: #fff;
+}
 /*body {
   padding-top: 40px;
   padding-bottom: 40px;
@@ -110,5 +113,4 @@ section{
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-
 
