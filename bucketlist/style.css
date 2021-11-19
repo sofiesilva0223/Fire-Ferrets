@@ -1,3 +1,4 @@
+/*@import url('https://fonts/googleapis.com.css?family=Poppins:300,400,500,600,700,800,900&display=swap');*/
 * {
     margin:0;
     padding:0;
@@ -134,4 +135,65 @@ section{
 .col p{
     font-size: 2 em;
     color: #fff;
+}
+
+/* for signup.html */
+.jumbotron{
+    position: relative;
+    border: 100px;
+    background: #240b2b;
+    margin-top: 100px;
+}
+.jumbotron h1{
+    color: #999eca;
+}
+.form-signin{
+    width: 300px;
+    padding: 15px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%, -50%);
+    background: rgba(0, 0, 0, 0.4);
+    text-align: center;
+    margin: 0 auto;
+}
+.form-signin h1{
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.form-signin input[type="name"], .form-signin input[type="email"],.form-signin input[type="password"]{
+    border: 0;
+    background: none;
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    border: 3px solid #7597de;
+    padding: 14px 10px;
+    width: 220px;
+    outline: none;
+    color: #fff;
+    border-radius: 24px;
+    transition: 0.25px;
+}
+.form-signin input[type="name"]:focus, .form-signin input[type="email"]:focus,.form-signin input[type="password"]:focus{
+    width: 270 px;
+    border-color: #937abb;
+}
+.form-signin input[type="submit"]{
+    border: 0;
+    background: none;
+    display: block;
+    margin: 20px auto;
+    text-align: center;
+    border: 3px solid #937abb;
+    padding: 14px 10px;
+    outline: none;
+    color: #4a5b7e;
+    border-radius: 24px;
+    transition: 0.25px;
+    cursor: pointer;
+}
+.form-signin input[type="submit"]:hover{
+    background: #937abb;
 }
