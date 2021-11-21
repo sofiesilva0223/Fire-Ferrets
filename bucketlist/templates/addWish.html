@@ -7,6 +7,8 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     <!--<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/.css'addWish) }}">-->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+   
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
     <link href="https://getbootstrap.com/docs/3.4/examples/jumbotron-narrow/jumbotron-narrow.css" rel="stylesheet">
     
@@ -17,26 +19,29 @@
 	<script type="text/javascript" src="../static/js/jquery.fileupload.js"></script>
 	<script type="text/javascript" src="../static/js/jquery.fileupload-process.js"></script>
 	<script type="text/javascript" src="../static/js/jquery.fileupload-ui.js"></script>
-	
+	    
         <script>
 		$(function(){
-			$('#fileupload').fileupload({
-      url: 'upload',
-      dataType: 'json',
-      add: function (e, data) {
-      data.submit();
-      }  		,
-			success:function(response,status) {
+			    $('#fileupload').fileupload({
+        			url: 'upload',
+        			dataType: 'json',
+        			add: function (e, data) {
+        				data.submit();
+        			},
+			        success:function(response,status) {
+
 					console.log(response.filename);
 					var filePath = 'static/Uploads/' + response.filename;
 					$('#imgUpload').attr('src',filePath);
 					$('#filePath').val(filePath);
-			console.log('success');
-			},
-			error:function(error){
-			console.log(error);
-			}
-    });
+                
+			        	console.log('success');
+			        },
+			        error:function(error){
+			        	console.log(error);
+			        }
+    			});
+
 		})
 	</script>
 
@@ -70,13 +75,16 @@
       <div class="header">
         <nav>
           <ul class="nav nav-pills pull-right">
-  <li role="presentation"><a href="/userHome">Home</a></li>
-	<li role="presentation" class="active"><a href="#">Add Item</a></li>
+
+	     <li role="presentation"><a href="/userHome">Home</a></li>
+	    <li role="presentation" class="active"><a href="#">Add Item</a></li>
+
             <li role="presentation" ><a href="/logout">Logout</a></li>
           </ul>
         </nav>
         <h3 class="text-muted">Python Flask App</h3>
       </div>
+
 	<div class="well">
       <form role="form" method="post" action="/addWish">
 
@@ -95,10 +103,15 @@
 <!-- Textarea -->
 <div class="form-group">
   <label for="txtPost">Description</label>
-    <textarea class="form-control" id="txtPost" name="inputDescription" ></textarea> 
+                     
+    <textarea class="form-control" id="txtPost" name="inputDescription" ></textarea>
+ 
 </div>
+
+
 <div class="form-group">
-  <label for="txtPost">Photos</label>                    
+  <label for="txtPost">Photos</label>
+                     
 <div class="input-group">
                 <span class="input-group-btn">
                     <span class="btn btn-primary btn-file">
@@ -109,6 +122,7 @@
                 <img  id="imgUpload" style="width: 140px; height: 140px;" class="img-thumbnail"><input type="hidden" name="filePath" id="filePath"></input>
 		</div>
             </div>
+  
 </div>
 
 <div class="form-group">
@@ -121,6 +135,9 @@
 <input name="done" type="checkbox"> Mark as Done <span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
 </div>
 
+
+
+
 <!-- Button -->
 <div class="form-group">
   
@@ -128,8 +145,11 @@
     <input id="singlebutton" name="singlebutton" class="btn btn-primary" type="submit" value="Publish" />
   	</p>
 </div>
+
 </form>
+
 </div>
+
       <footer class="footer">
         <p>&copy; Fire Ferrets 2021</p>
       </footer>
