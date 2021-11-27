@@ -119,36 +119,16 @@ def getWish():
     try:
         if session.get('user'):
             _user = session.get('user')
-            #_limit = pageLimit
-            #_offset = request.form['offset']
-            #print(_offset)
-            #_total_records = 0
 
             con = MySQLConnection(**config)
             cur = con.cursor(dictionary=True, cursor_class=MySQLCursor)
-            #cur.callproc('sp_GetWishByUser',(_user,))
-
             
             select_stmt = "select * from tbl_wish where wish_user_id = %(_user)s"   
-            #select count(*) into %(_total_records)s from tbl_wish where wish_user_id = %(_user)s; 
-            #SET @t1 = CONCAT( 'select * from tbl_wish where wish_user_id = ',%(_user)s,' order by wish_date desc limit ',%(_limit)s,' offset ',%(_offset)s);
-	        #PREPARE stmt FROM @t1;
-	        #EXECUTE stmt;
-	        #DEALLOCATE PREPARE stmt1;
-            #"""
 
             cur.execute(select_stmt, {'_user': _user})
             
             wishes = cur.fetchall()
-            #cur.close()
 
-            #ur = con.cursor(dictionary=True, cursor_class=MySQLCursor)
-
-            #cur.execute('SELECT @_sp_GetWishByUser_3')
-
-            #outParam = cur.fetchall()
-
-            #response = []
             wishes_dict = []
             for wish in wishes:
                 wish_dict = {
@@ -157,8 +137,6 @@ def getWish():
                         'Description': wish[2],
                         'Date': wish[4]}
                 wishes_dict.append(wish_dict)
-            #response.append(wishes_dict)
-            #response.append({'total':outParam[0][0]}) 
 
             return json.dumps(wishes_dict)
         else:
