@@ -65,8 +65,8 @@ section{
     justify-content: center;
     align-items: center;
 }
-footer{
-    color: #fff;
+.footer{
+    color: #ffffff;
 }
 
 /*section ::before{
@@ -105,10 +105,15 @@ footer{
     padding: 100px;
     background: #1c0522;
 }
+.row h1{
+    font-size: 5 em;
+    margin-bottom: 10px;
+    color: #fff;
+}
 .row h2{
     font-size: 3.5 em;
     margin-bottom: 10px;
-    color: #fff;
+    color: rgb(165, 132, 132);
 }
 
 .row h4{
@@ -125,10 +130,15 @@ footer{
     padding: 100px;
     background: #240b2b;
 }
+.col h1{
+    font-size: 5 em;
+    margin-bottom: 10px;
+    color: #fff;
+}
 .col h2{
     font-size: 3.5 em;
     margin-bottom: 10px;
-    color: #fff;
+    color: rgb(165, 132, 132);
 }
 
 .col h4{
@@ -204,3 +214,37 @@ footer{
 }
 
 /* for the addWish.html/userHome.html*/
+.form-signin .form-signin-heading,
+.form-signin .checkbox {
+    margin-bottom: 10px;
+}
+.form-signin .checkbox {
+font-weight: normal;
+}
+.form-signin .form-control {
+    position: relative;
+    height: auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+        box-sizing: border-box;
+    padding: 10px;
+    font-size: 16px;
+}
+.form-signin .form-control:focus {
+    z-index: 2;
+}
+
+/* for the addWish.html/userHome.html*/
+legend{
+    color:#fff;
+}
+.form-group label{
+    color: #fff;
+}
+.form-group glyphicon-ok{
+    color: #fff;
+}
+
+.container {
+    margin-top: 100px;
+}
