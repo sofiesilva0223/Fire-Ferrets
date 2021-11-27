@@ -10,10 +10,10 @@ app = Flask(__name__)
 app.secret_key = 'why would I tell you my secret key?'
 
 config = {
-  'user': 'root',
-  'password': 'Tintinnabulation321!',
-  'host': 'localhost',
-  'database': 'bucketlist',
+    'user': 'root',
+    'password': 'Tintinnabulation321!',
+    'host': 'localhost',
+    'database': 'bucketlist',
   'raise_on_warnings': True
 }
 
@@ -198,7 +198,6 @@ def addWish():
                 return redirect('/userHome')
             else:
                 return render_template('error.html',error = 'An error occurred!')
-
         else:
             return render_template('error.html',error = 'Unauthorized Access')
     except Exception as e:
@@ -293,9 +292,6 @@ def signUp():
     finally:
         cur.close()
         conn.close()
-
-            
-
 
 if __name__ == "__main__":
     app.run()
